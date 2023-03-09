@@ -5,7 +5,7 @@ interface Rating {
   Value: string
 }
 
-interface MovieSearchType {
+export interface MovieSearchType {
   Poster: string
   Title: string
   Type: string
