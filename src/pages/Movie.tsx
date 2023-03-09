@@ -39,9 +39,8 @@ export const Movie = () => {
           height='480'
           src={vidUrl}
           allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
           allowFullScreen
-          title='Embedded youtube'
+          title='Embedded Video'
           className='h-full w-full absolute left-0'
         />
       </div>
