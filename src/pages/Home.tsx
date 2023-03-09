@@ -2,28 +2,21 @@ import React, { useState } from 'react'
 import { CgSearch } from 'react-icons/cg'
 
 import { Input } from 'components/Input'
-import { MovieResultType, MovieResult } from 'components/MovieResult'
+import { MovieResult } from 'components/MovieResult'
+import { useOmdbApi } from 'hooks/useOmdbApi'
 
 export const HomePage = () => {
   const [searchVal, setSearchVal] = useState<string>('')
-  const [foundMovies, setFoundMoives] = useState<MovieResultType[]>([])
+  const {omdbRes, searchOmdb} = useOmdbApi()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchVal(e.target.value)
   }
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    const omdb_api = new URL("http://www.omdbapi.com/")
-    omdb_api.searchParams.set("apikey", process.env.REACT_APP_OMDB_API_KEY as string)
-    omdb_api.searchParams.set("s", searchVal)
 
-    const res = await fetch(omdb_api)
-    if (res.ok) {
-      const data = await res.json()
-      setFoundMoives(data.Search)
-    }
+    searchOmdb(searchVal)
   }
 
   return (
@@ -38,8 +31,8 @@ export const HomePage = () => {
         </form>
       </div>
       {
-        foundMovies && <div>
-          {foundMovies.map((movie) => <MovieResult key={movie.imdbID} {...movie}/>)}
+        omdbRes && <div>
+          {omdbRes.map((movie) => <MovieResult key={movie.imdbID} {...movie}/>)}
         </div>
       }
     </section>

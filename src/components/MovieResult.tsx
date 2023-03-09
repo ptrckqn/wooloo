@@ -12,14 +12,16 @@ export interface MovieResultType {
 }
 
 export const MovieResult = ({ Poster, Title, Type, Year, imdbID }: MovieResultType) => {
+  if (!["series", "movie"].includes(Type)) {
+    return null
+  }
+
   const renderType = (type: string) => {
     switch (type) {
       case 'series':
         return <CgTv size={300} />
       case 'movie':
         return <CgFilm size={300} />
-      case 'game':
-        return <CgGames size={300} />
       default:
         return <CgPlayButtonO size={300} />
     }
