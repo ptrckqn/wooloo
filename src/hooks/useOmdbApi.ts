@@ -35,7 +35,7 @@ export const useOmdbApi = () => {
   const [omdbRes, setOmdbRes] = useState<MovieSearchType[]>()
 
   const searchOmdb = async (query: string) => {
-    const omdbApi = new URL('http://www.omdbapi.com/')
+    const omdbApi = new URL('https://www.omdbapi.com/')
     omdbApi.searchParams.set('apikey', API_KEY || '')
     omdbApi.searchParams.set('s', query)
 
@@ -47,7 +47,7 @@ export const useOmdbApi = () => {
   }
 
   const getById = async (id: string) => {
-    const omdbApi = new URL('http://www.omdbapi.com/')
+    const omdbApi = new URL('https://www.omdbapi.com/')
     omdbApi.searchParams.set('apikey', API_KEY || '')
     omdbApi.searchParams.set('i', id)
 
