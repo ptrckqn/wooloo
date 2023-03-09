@@ -3,12 +3,16 @@ import { Link, Outlet } from 'react-router-dom'
 
 const App = () => {
   return (
-    <div className='container mx-auto max-w-screen-lg p-2 md:p-8'>
-      <Link to={'/'}>
-        <h1 className='cursor-pointer text-5xl font-semibold'>🐑 Wooloo</h1>
-      </Link>
+    <div className='bg-slate-50'>
+      <div className='container mx-auto h-screen max-w-screen-lg p-2 md:p-8'>
+        <Link to={'/'}>
+          <h1 className='cursor-pointer text-5xl font-thin'>🐑 Wooloo</h1>
+        </Link>
 
-      <Outlet />
+        <div className='my-8'>
+          <Outlet />
+        </div>
+      </div>
     </div>
   )
 }
