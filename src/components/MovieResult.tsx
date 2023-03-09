@@ -30,9 +30,9 @@ export const MovieResult = ({ Poster, Title, Type, Year, imdbID }: MovieResultTy
       <div className='relative my-2 h-60 overflow-hidden rounded bg-slate-300 p-3 shadow'>
         <div className='flex h-full justify-between'>
           <img src={Poster} className='h-full' />
-          <div className='mr-auto'>
-            <h6 className='text-lg font-thin'>{Title}</h6>
-            <div className='text-sm'>({Year})</div>
+          <div className='mr-auto ml-4 mt-8'>
+            <h6 className='text-4xl font-thin'>{Title}</h6>
+            <div className=''>({Year})</div>
           </div>
           <span className='absolute right-0 top-1/2 -translate-y-2/4 translate-x-1/4	text-slate-400 opacity-30'>
             {renderType(Type)}
