@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 
 import { Input } from 'components/Input'
 import { useOmdbApi, MovieSearchType } from 'hooks/useOmdbApi'
@@ -8,7 +8,7 @@ export const Movie = () => {
   const { movieId } = useParams()
   const { omdbRes, getById } = useOmdbApi()
 
-  const [seriesInfo, setSeriesInfo] = useState({ season: '', episode: '' })
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (movieId) {
@@ -17,19 +17,20 @@ export const Movie = () => {
   }, [movieId])
 
   const handleSeriesInfo = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSeriesInfo({
-      ...seriesInfo,
-      [key]: e.target.value,
-    })
+    searchParams.set(key, e.target.value)
+    setSearchParams(searchParams)
   }
 
   const renderPlayer = (movie: MovieSearchType) => {
     let vidUrl = `https://vidsrc.me/embed/${movie.imdbID}`
+
     if (movie.Type === 'series') {
-      if (!seriesInfo.season || !seriesInfo.episode) {
+      const season = searchParams.get("s")
+      const episode = searchParams.get("e")
+      if (!season || !episode) {
         return null
       }
-      vidUrl += `/${seriesInfo.season}-${seriesInfo.episode}`
+      vidUrl += `/${season}-${episode}`
     }
 
     return (
@@ -52,8 +53,6 @@ export const Movie = () => {
   }
 
   const movie = omdbRes[0]
-
-  console.log(movie)
   return (
     <div>
       <h3 className='mb-8 text-3xl'>
@@ -64,11 +63,11 @@ export const Movie = () => {
           <div className='flex'>
             <div className='flex items-center'>
               <div className='mr-2'>Season: </div>
-              <Input value={seriesInfo.season} onChange={handleSeriesInfo('season')} small />
+              <Input value={searchParams.get("s") || ""} onChange={handleSeriesInfo("s")} small />
             </div>
             <div className='mx-2 flex items-center'>
               <div className='mr-2'>Episode: </div>
-              <Input value={seriesInfo.episode} onChange={handleSeriesInfo('episode')} small />
+              <Input value={searchParams.get("e") || ""} onChange={handleSeriesInfo("e")} small />
             </div>
           </div>
         </div>
