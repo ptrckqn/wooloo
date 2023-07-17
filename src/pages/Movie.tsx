@@ -4,6 +4,8 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { Select } from 'components/Select'
 import { useOmdbApi, MovieSearchType } from 'hooks/useOmdbApi'
 
+const WATCHED_TIMER = 1000 * 60 * 10 // 10 minutes
+
 export const Movie = () => {
   const { movieId } = useParams()
   const { episodes, omdbRes, getById, getByIdAndSeason } = useOmdbApi()
@@ -12,6 +14,23 @@ export const Movie = () => {
 
   const movie = omdbRes?.[0]
 
+  const setWatchedStatus = () => {
+    const season = searchParams.get('s') ?? 1
+    const episode = searchParams.get('e') ?? 1
+    if (movieId && movie?.Type === 'series') {
+      const watchedState = localStorage.getItem(movieId)
+      const watched = watchedState ? JSON.parse(watchedState) : {}
+
+      const seasonInfo = watched[season] ?? {}
+
+      seasonInfo[episode] = !seasonInfo[episode] ?? true
+
+      watched[season] = seasonInfo
+
+      localStorage.setItem(movieId, JSON.stringify(watched))
+    }
+  }
+
   useEffect(() => {
     if (movieId) {
       getById(movieId)
@@ -19,18 +38,27 @@ export const Movie = () => {
   }, [movieId])
 
   useEffect(() => {
+    let watchedTimeout: string | number | NodeJS.Timeout | undefined
+
     if (movieId && searchParams.get('s')) {
-      getByIdAndSeason(movieId, searchParams.get('s') ?? "1")
+      getByIdAndSeason(movieId, searchParams.get('s') ?? '1')
     }
+
+    if (searchParams.get('s') && searchParams.get('e')) {
+      watchedTimeout = setTimeout(() => {
+        setWatchedStatus()
+      }, WATCHED_TIMER)
+    }
+
+    return () => clearTimeout(watchedTimeout)
   }, [searchParams])
 
   useEffect(() => {
     if (movie?.Type === 'series') {
-      searchParams.set("s", "1")
-      searchParams.set("e", "1")
+      searchParams.set('s', '1')
+      searchParams.set('e', '1')
       setSearchParams(searchParams)
     }
-
   }, [omdbRes])
 
   const handleSeriesInfo = (key: string) => (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -65,11 +93,25 @@ export const Movie = () => {
     )
   }
 
+  const renderWatchedStatus = () => {
+    const watchedState = localStorage.getItem(movieId ?? '')
+    const watched = watchedState ? JSON.parse(watchedState) : {}
+
+    if (!watched) {
+      return "Not Watched"
+    }
+
+    const season = searchParams.get('s') ?? 1
+    const episode = searchParams.get('e') ?? 1
+
+    const isWatched = watched[season]?.[episode] 
+    
+    return isWatched ? "Watched" : "Not Watched"
+  }
+
   if (!movie) {
     return null
   }
-
-
 
   return (
     <div>
@@ -78,7 +120,7 @@ export const Movie = () => {
       </h3>
       {movie.Type === 'series' && (
         <div>
-          <div className='flex'>
+          <div className='flex items-center'>
             <div className='flex items-center'>
               <div className='mr-2'>Season: </div>
               <Select
@@ -99,6 +141,9 @@ export const Movie = () => {
                 }))}
                 onChange={handleSeriesInfo('e')}
               />
+            </div>
+            <div>
+            <button className="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300 pointer" onClick={setWatchedStatus}>{renderWatchedStatus()}</button>
             </div>
           </div>
         </div>
