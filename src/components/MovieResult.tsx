@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { CgFilm, CgGames, CgPlayButtonO, CgTv } from 'react-icons/cg'
+import { CgFilm, CgPlayButtonO, CgTv } from 'react-icons/cg'
 
 export interface MovieResultType {
   Poster: string
