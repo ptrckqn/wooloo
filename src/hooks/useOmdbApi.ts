@@ -5,6 +5,14 @@ interface Rating {
   Value: string
 }
 
+interface Episode {
+  Title: string;
+  Released: string;
+  Episode: string;
+  imdbRating: string;
+  imdbID: string;
+}
+
 export interface MovieSearchType {
   Poster: string
   Title: string
@@ -29,10 +37,12 @@ export interface MovieSearchType {
   totalSeasons?: string
 }
 
+
 const API_KEY = process.env.REACT_APP_OMDB_API_KEY
 
 export const useOmdbApi = () => {
   const [omdbRes, setOmdbRes] = useState<MovieSearchType[]>()
+  const [episodes, setEpisodes] = useState<Episode[]>()
 
   const searchOmdb = async (query: string) => {
     const omdbApi = new URL('https://www.omdbapi.com/')
@@ -57,9 +67,23 @@ export const useOmdbApi = () => {
       setOmdbRes([data])
     }
   }
+
+  const getByIdAndSeason = async (id: string, season: string) => {    
+    const omdbApi = new URL('https://www.omdbapi.com/')
+    omdbApi.searchParams.set('apikey', API_KEY || '')
+    omdbApi.searchParams.set('i', id)
+    omdbApi.searchParams.set('Season', season)
+    const res = await fetch(omdbApi)
+    if (res.ok) {
+      const data = await res.json()
+      setEpisodes(data.Episodes)
+    }
+  }
   return {
     omdbRes,
+    episodes,
     searchOmdb,
     getById,
+    getByIdAndSeason,
   }
 }

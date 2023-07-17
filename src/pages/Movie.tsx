@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 
-import { Input } from 'components/Input'
 import { Select } from 'components/Select'
 import { useOmdbApi, MovieSearchType } from 'hooks/useOmdbApi'
 
 export const Movie = () => {
   const { movieId } = useParams()
-  const { omdbRes, getById } = useOmdbApi()
+  const { episodes, omdbRes, getById, getByIdAndSeason } = useOmdbApi()
 
   const [searchParams, setSearchParams] = useSearchParams()
+
+  const movie = omdbRes?.[0]
 
   useEffect(() => {
     if (movieId) {
@@ -17,7 +18,22 @@ export const Movie = () => {
     }
   }, [movieId])
 
-  const handleSeriesInfo = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  useEffect(() => {
+    if (movieId && searchParams.get('s')) {
+      getByIdAndSeason(movieId, searchParams.get('s') ?? "1")
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    if (movie?.Type === 'series') {
+      searchParams.set("s", "1")
+      searchParams.set("e", "1")
+      setSearchParams(searchParams)
+    }
+
+  }, [omdbRes])
+
+  const handleSeriesInfo = (key: string) => (e: React.ChangeEvent<HTMLSelectElement>) => {
     searchParams.set(key, e.target.value)
     setSearchParams(searchParams)
   }
@@ -49,12 +65,12 @@ export const Movie = () => {
     )
   }
 
-  if (!omdbRes) {
+  if (!movie) {
     return null
   }
 
-  const movie = omdbRes[0]
-  console.log('movie', movie)
+
+
   return (
     <div>
       <h3 className='mb-8 text-3xl'>
@@ -67,7 +83,7 @@ export const Movie = () => {
               <div className='mr-2'>Season: </div>
               <Select
                 value={searchParams.get('s') || '1'}
-                options={Array.from({ length: parseInt(movie?.totalSeasons ?? "1") }, (_, i) => ({
+                options={Array.from({ length: parseInt(movie?.totalSeasons ?? '1') }, (_, i) => ({
                   value: `${i + 1}`,
                 }))}
                 onChange={handleSeriesInfo('s')}
@@ -75,7 +91,14 @@ export const Movie = () => {
             </div>
             <div className='mx-2 flex items-center'>
               <div className='mr-2'>Episode: </div>
-              <Input value={searchParams.get('e') || ''} onChange={handleSeriesInfo('e')} small />
+              <Select
+                value={searchParams.get('e') || '1'}
+                options={Array.from({ length: episodes?.length ?? 1 }, (_, i) => ({
+                  value: `${i + 1}`,
+                  label: `${i + 1} - ${episodes?.[i]?.Title}`,
+                }))}
+                onChange={handleSeriesInfo('e')}
+              />
             </div>
           </div>
         </div>
