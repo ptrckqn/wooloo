@@ -9,7 +9,7 @@ const WATCHED_TIMER = 1000 * 60 * 10 // 10 minutes
 export const Movie = () => {
   const { movieId } = useParams()
   const { episodes, omdbRes, getById, getByIdAndSeason } = useOmdbApi()
-
+  
   const [searchParams, setSearchParams] = useSearchParams()
 
   const movie = omdbRes?.[0]
@@ -55,8 +55,11 @@ export const Movie = () => {
 
   useEffect(() => {
     if (movie?.Type === 'series') {
-      searchParams.set('s', '1')
-      searchParams.set('e', '1')
+      const s = searchParams.get('s') ?? 1
+      const e = searchParams.get('e') ?? 1
+
+      searchParams.set('s', s.toString())
+      searchParams.set('e', e.toString())
       setSearchParams(searchParams)
     }
   }, [omdbRes])
@@ -98,15 +101,15 @@ export const Movie = () => {
     const watched = watchedState ? JSON.parse(watchedState) : {}
 
     if (!watched) {
-      return "Not Watched"
+      return 'Not Watched'
     }
 
     const season = searchParams.get('s') ?? 1
     const episode = searchParams.get('e') ?? 1
 
-    const isWatched = watched[season]?.[episode] 
-    
-    return isWatched ? "Watched" : "Not Watched"
+    const isWatched = watched[season]?.[episode]
+
+    return isWatched ? 'Watched' : 'Not Watched'
   }
 
   if (!movie) {
@@ -143,13 +146,18 @@ export const Movie = () => {
               />
             </div>
             <div>
-            <button className="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300 pointer" onClick={setWatchedStatus}>{renderWatchedStatus()}</button>
+              <button
+                className='pointer mr-2 rounded bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                onClick={setWatchedStatus}
+              >
+                {renderWatchedStatus()}
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {movie && renderPlayer(movie)}
+      {/* {movie && renderPlayer(movie)} */}
     </div>
   )
 }
