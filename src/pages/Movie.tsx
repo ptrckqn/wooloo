@@ -9,7 +9,7 @@ const WATCHED_TIMER = 1000 * 60 * 10 // 10 minutes
 export const Movie = () => {
   const { movieId } = useParams()
   const { episodes, omdbRes, getById, getByIdAndSeason } = useOmdbApi()
-  
+
   const [searchParams, setSearchParams] = useSearchParams()
 
   const movie = omdbRes?.[0]
@@ -157,7 +157,7 @@ export const Movie = () => {
         </div>
       )}
 
-      {/* {movie && renderPlayer(movie)} */}
+      {movie && renderPlayer(movie)}
     </div>
   )
 }
